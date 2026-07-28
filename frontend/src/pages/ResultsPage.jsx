@@ -66,6 +66,19 @@ export default function ResultsPage() {
 
   const chartHeight = Math.max(chartData.length * 64, 160)
 
+  const winners = chartData.filter((o) => o.isWinner)
+  let closedMessage = null
+  if (results.is_closed) {
+    if (results.total_votes === 0) {
+      closedMessage = 'Poll closed — no votes were cast.'
+    } else if (winners.length > 1) {
+      const names = winners.map((w) => w.text).join(' and ')
+      closedMessage = `It's a tie — ${names} are neck and neck.`
+    } else {
+      closedMessage = `Verdict's in — we're doing ${winners[0].text}.`
+    }
+  }
+
   return (
     <div className="flex-1 flex items-center justify-center px-6 py-16">
       <div className="w-full max-w-lg">
@@ -78,6 +91,12 @@ export default function ResultsPage() {
         <p className="text-sm text-ink-textMuted font-mono mb-8">
           {results.total_votes} vote{results.total_votes === 1 ? '' : 's'}
         </p>
+
+        {closedMessage && (
+          <div className="mb-6 px-4 py-3 rounded-lg bg-ink-surface border border-ink-amber/40">
+            <p className="font-display text-lg text-ink-amber">{closedMessage}</p>
+          </div>
+        )}
 
         <div style={{ width: '100%', height: chartHeight }} className="mb-8">
           <ResponsiveContainer>
